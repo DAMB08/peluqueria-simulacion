@@ -58,7 +58,7 @@ def cortar(entorno, TIEMPO_CORTE_MAX, TIEMPO_CORTE_MIN):
     global duracion_servicio_total
     R = random.random()  # Obtiene un número aleatorio y lo guarda en R
     tiempo = TIEMPO_CORTE_MAX - TIEMPO_CORTE_MIN
-    tiempo_corte = TIEMPO_CORTE_MIN + (tiempo*R)  # Distribucion uniforme
+    tiempo_corte = TIEMPO_CORTE_MIN + (tiempo*R)  # Distribución uniforme
     lista_duracion_servicio_total.append(tiempo_corte)
     yield entorno.timeout(tiempo_corte)  # deja correr el tiempo en minutos
     # Acumula los tiempos de uso del cliente
