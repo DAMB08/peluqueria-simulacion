@@ -28,7 +28,30 @@ def crearEntorno(SEMILLA, CANTIDAD_PELUQUEROS, TIEMPO_CORTE_MAX,
                      TIEMPO_CORTE_MAX, TIEMPO_CORTE_MIN)
 
 
-def cortar(cliente, entorno, TIEMPO_CORTE_MAX, TIEMPO_CORTE_MIN):
+def correrSimulacion(entorno, personal, TOTAL_CLIENTES, T_LLEGADAS, TIEMPO_CORTE_MAX,
+                     TIEMPO_CORTE_MIN):
+    # Invoca la función princial
+    entorno.process(principal(entorno, personal, TOTAL_CLIENTES, T_LLEGADAS,
+                              TIEMPO_CORTE_MAX,
+                              TIEMPO_CORTE_MIN))
+    entorno.run()  # Inicia la simulación
+
+
+def principal(entorno, personal, TOTAL_CLIENTES, T_LLEGADAS, TIEMPO_CORTE_MAX,
+              TIEMPO_CORTE_MIN):
+    llegada = 0
+    i = 0
+    for i in range(TOTAL_CLIENTES):  # Para cantidad clientes
+        R = random.random()
+        llegada = -T_LLEGADAS * math.log(R)  # Distribución exponencial
+        # Deja transcurrir un tiempo entre uno y otro
+        yield entorno.timeout(llegada)
+        i += 1
+        entorno.process(cliente(entorno,  personal, TIEMPO_CORTE_MAX,
+                                TIEMPO_CORTE_MIN))
+
+
+def cortar(entorno, TIEMPO_CORTE_MAX, TIEMPO_CORTE_MIN):
     """Para poder acceder a la variable duracion_servicio_total 
     declarada anteriormente """
 
@@ -42,7 +65,7 @@ def cortar(cliente, entorno, TIEMPO_CORTE_MAX, TIEMPO_CORTE_MIN):
     duracion_servicio_total = duracion_servicio_total + tiempo_corte
 
 
-def cliente(entorno, cliente, personal, TIEMPO_CORTE_MAX,
+def cliente(entorno,  personal, TIEMPO_CORTE_MAX,
             TIEMPO_CORTE_MIN):
     global tiempo_espera_total
     global fin
@@ -56,34 +79,11 @@ def cliente(entorno, cliente, personal, TIEMPO_CORTE_MAX,
         tiempo_espera_total = tiempo_espera_total + espera
         lista_tiempo_espera_total.append(tiempo_espera_total)
         # Invoca la función cortar
-        yield entorno.process(cortar(cliente, entorno,  TIEMPO_CORTE_MAX, TIEMPO_CORTE_MIN))
+        yield entorno.process(cortar(entorno,  TIEMPO_CORTE_MAX, TIEMPO_CORTE_MIN))
         deja_cortar = entorno.now  # Guarda el minuto en que termina el proceso cortar
         lista_salida_cliente.append(deja_cortar)
         # Conserva globalmente el último minuto de la simulación
         fin = deja_cortar
-
-
-def principal(entorno, personal, TOTAL_CLIENTES, T_LLEGADAS, TIEMPO_CORTE_MAX,
-              TIEMPO_CORTE_MIN):
-    llegada = 0
-    i = 0
-    for i in range(TOTAL_CLIENTES):  # Para cantidad clientes
-        R = random.random()
-        llegada = -T_LLEGADAS * math.log(R)  # Distribución exponencial
-        # Deja transcurrir un tiempo entre uno y otro
-        yield entorno.timeout(llegada)
-        i += 1
-        entorno.process(cliente(entorno, 'Cliente %d' % i, personal, TIEMPO_CORTE_MAX,
-                                TIEMPO_CORTE_MIN))
-
-
-def correrSimulacion(entorno, personal, TOTAL_CLIENTES, T_LLEGADAS, TIEMPO_CORTE_MAX,
-                     TIEMPO_CORTE_MIN):
-    # Invoca la función princial
-    entorno.process(principal(entorno, personal, TOTAL_CLIENTES, T_LLEGADAS,
-                              TIEMPO_CORTE_MAX,
-                              TIEMPO_CORTE_MIN))
-    entorno.run()  # Inicia la simulación
 
 
 # retonar lista de datos

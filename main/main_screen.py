@@ -1,6 +1,4 @@
 
-#!/usr/bin/python
-
 from tkinter import *
 from tkinter import messagebox, ttk
 
@@ -57,21 +55,22 @@ class Peluqueria():
             column=3, row=2)
 
         # botones
-        ttk.Button(self.mainWindow, text='Ejecutar por Cantidad Clientes',
+        ttk.Button(self.mainWindow, text='Ejecutar Simulación',
                    command=self.obtenerDatos).grid(
             column=0, row=4)
         ttk.Button(self.mainWindow, text='Mostrar Gráficos',
-                   command=self.generarGraficos).grid(
+                   command=self.generarGraficos,
+                   ).grid(
             column=1, row=4)
 
     def obtenerDatos(self):
         if (self.semilla.get() and
-            self.cantidadPeluqueros.get() and
-            self.tiempoMaximo.get() and
-            self.tiempoMinimo.get() and
-            self.totalClientes.get() and
-            self.tiempoLlegada.get()
-            ):
+                self.cantidadPeluqueros.get() and
+                self.tiempoMaximo.get() and
+                self.tiempoMinimo.get() and
+                self.totalClientes.get() and
+                self.tiempoLlegada.get()
+                ):
             self.listaClientes = []
             crearEntorno(int(self.semilla.get()),
                          int(self.cantidadPeluqueros.get()),
@@ -82,18 +81,18 @@ class Peluqueria():
                          )
 
             for index in range(int(self.totalClientes.get())):
-                self.listaClientes.append('Cliente-{0}'.format(index+1))
+                self.listaClientes.append('{0}'.format(index+1))
 
             print(self.listaClientes)
         else:
             messagebox.showwarning('AVISO', 'Debes ingresar los datos')
 
-    def generarGraficos(self):
+    def generarGraficos2(self):
         # se limpian los datos
-        self.listaEsperaCliente.clear()
-        self.listaLlegadaCliente.clear()
-        self.listaDuracionServicio.clear()
-        self.listaSalidaCliente.clear()
+        self.listaEsperaCliente = []
+        self.listaLlegadaCliente = []
+        self.listaDuracionServicio = []
+        self.listaSalidaCliente = []
 
         self.listaEsperaCliente = obtenerTiempoEspera()
         self.listaLlegadaCliente = obtenerLlegadaCliente()
@@ -102,39 +101,78 @@ class Peluqueria():
 
         if(self.listaEsperaCliente and self.listaLlegadaCliente
            and self.listaDuracionServicio and self.listaSalidaCliente):
-
-          #  print(self.listaEsperaCliente)
-          # gráfica de la lista en espera
-            plt.subplot(2, 2, 1)
-            plt.bar(self.listaClientes, self.listaEsperaCliente)
-            plt.title('Tiempos espera  de los clientes')
-            plt.xlabel('Clientes')
-            plt.ylabel('Tiempo(Minutos)')
-
-            # gráfica de la lista de llegada
-            plt.subplot(2, 2, 2)
-            plt.bar(self.listaClientes, self.listaLlegadaCliente)
-            plt.title('Tiempos llegada  de los clientes')
-            plt.xlabel('Clientes')
-            plt.ylabel('Tiempo(Minutos)')
-
             # gráfica de la lista de duración del servicio
-            plt.subplot(2, 2, 3)
+            plt.subplot(1, 2, 1)
             plt.bar(self.listaClientes, self.listaDuracionServicio)
             plt.title('Tiempos duración  del servicio')
             plt.xlabel('Clientes')
             plt.ylabel('Tiempo(Minutos)')
+            plt.grid()
 
             # gráfica de la lista de los tiempos de salida de los clientes
-            plt.subplot(2, 2, 4)
+            plt.subplot(1, 2, 2)
             plt.bar(self.listaClientes, self.listaSalidaCliente)
             plt.title('Tiempos salida  del cliente')
             plt.xlabel('Clientes')
             plt.ylabel('Tiempo(Minutos)')
-
+            plt.grid()
             plt.show()
         else:
             messagebox.showwarning('AVISO', 'Debes ejecutar la simulación')
+
+    def generarGraficos(self):
+
+        self.listaEsperaCliente = obtenerTiempoEspera()
+        self.listaLlegadaCliente = obtenerLlegadaCliente()
+        self.listaDuracionServicio = obtenerDuracionServicio()
+        self.listaSalidaCliente = obtenerSalidaCliente()
+
+        if (len(self.listaEsperaCliente) == 0 and
+           len(self.listaLlegadaCliente) == 0 and
+           len(self.listaDuracionServicio) == 0 and
+           len(self.listaSalidaCliente) == 0):
+
+            messagebox.showwarning('AVISO', 'Debes ejecutar la simulación')
+        else:
+            # gráfica de la lista en espera
+            plt.subplot(1, 2, 1)
+            plt.bar(self.listaClientes, self.listaEsperaCliente)
+            plt.title('Tiempos espera  de los clientes')
+            plt.xlabel('Clientes')
+            plt.ylabel('Tiempo(Minutos)')
+            plt.grid()
+
+            # gráfica de la lista de llegada
+            plt.subplot(1, 2, 2)
+            plt.bar(self.listaClientes, self.listaLlegadaCliente)
+            plt.title('Tiempos llegada  de los clientes')
+            plt.xlabel('Clientes')
+            plt.ylabel('Tiempo(Minutos)')
+            plt.grid()
+
+            plt.show()
+
+            plt.subplot(1, 2, 1)
+            plt.bar(self.listaClientes, self.listaDuracionServicio)
+            plt.title('Tiempos duración  del servicio')
+            plt.xlabel('Clientes')
+            plt.ylabel('Tiempo(Minutos)')
+            plt.grid()
+
+            # gráfica de la lista de los tiempos de salida de los clientes
+            plt.subplot(1, 2, 2)
+            plt.bar(self.listaClientes, self.listaSalidaCliente)
+            plt.title('Tiempos salida  del cliente')
+            plt.xlabel('Clientes')
+            plt.ylabel('Tiempo(Minutos)')
+            plt.grid()
+            plt.show()
+
+            # se limpian los datos
+        self.listaEsperaCliente.clear()
+        self.listaLlegadaCliente.clear()
+        self.listaDuracionServicio.clear()
+        self.listaSalidaCliente.clear()
 
     def limpiar(self):
         self.listaEsperaCliente.clear()
